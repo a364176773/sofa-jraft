@@ -19,17 +19,16 @@ package com.alipay.sofa.jraft.rpc.impl.cli;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
-
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.error.RaftError;
-import com.alipay.sofa.jraft.rpc.CliRequests.LearnersOpResponse;
 import com.alipay.sofa.jraft.rpc.CliRequests.RemoveLearnersRequest;
 import com.alipay.sofa.jraft.rpc.RpcRequestClosure;
 import com.alipay.sofa.jraft.util.RpcFactoryHelper;
 import com.google.protobuf.Message;
 
 
-import static com.alipay.sofa.jraft.rpc.CliRequests.*;
+import static com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersRequest;
+import static com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersResponse;
 
 /**
  * Learners2Followers request processor.
@@ -40,7 +39,7 @@ import static com.alipay.sofa.jraft.rpc.CliRequests.*;
 public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<Learners2FollowersRequest> {
 
     public Learners2FollowersRequestProcessor(final Executor executor) {
-        super(executor, LearnersOpResponse.getDefaultInstance());
+        super(executor, Learners2FollowersResponse.getDefaultInstance());
     }
 
     @Override

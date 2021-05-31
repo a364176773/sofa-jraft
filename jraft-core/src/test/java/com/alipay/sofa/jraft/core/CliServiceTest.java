@@ -248,6 +248,38 @@ public class CliServiceTest {
             }
         }
     }
+    @Test
+    public void testAddLearnersAndLearner2Followers() throws Exception {
+        final PeerId peer3 = new PeerId(TestUtils.getMyIp(), TestUtils.INIT_PORT + 3);
+        assertTrue(this.cluster.start(peer3.getEndpoint()));
+        sendTestTaskAndWait(this.cluster.getLeader(), 0);
+        Thread.sleep(100);
+        assertEquals(0, this.cluster.getFsmByPeer(peer3).getLogs().size());
+
+        assertTrue(this.cliService.addLearners(this.groupId, this.conf, Arrays.asList(peer3)).isOk());
+        Thread.sleep(100);
+        assertEquals(10, this.cluster.getFsmByPeer(peer3).getLogs().size());
+        sendTestTaskAndWait(this.cluster.getLeader(), 0);
+        Thread.sleep(100);
+        assertEquals(6, this.cluster.getFsms().size());
+        for (final MockStateMachine fsm : this.cluster.getFsms()) {
+            assertEquals(20, fsm.getLogs().size());
+        }
+
+        //learner to follower peer3
+        assertTrue(this.cliService.learner2Follower(this.groupId, this.conf, peer3).isOk());
+        Thread.sleep(200);
+        sendTestTaskAndWait(this.cluster.getLeader(), 0);
+        Thread.sleep(1000);
+        assertEquals(6, this.cluster.getFsms().size());
+        for (final MockStateMachine fsm : this.cluster.getFsms()) {
+            if (fsm.getAddress().equals(peer3.getEndpoint())) {
+                assertEquals(20, fsm.getLogs().size());
+            } else {
+                assertEquals(30, fsm.getLogs().size());
+            }
+        }
+    }
 
     @Test
     public void testChangePeers() throws Exception {
