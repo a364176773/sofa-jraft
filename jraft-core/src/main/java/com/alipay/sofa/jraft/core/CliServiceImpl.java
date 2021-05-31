@@ -27,6 +27,11 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alipay.sofa.jraft.CliService;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.conf.Configuration;
@@ -35,6 +40,7 @@ import com.alipay.sofa.jraft.error.JRaftException;
 import com.alipay.sofa.jraft.error.RaftError;
 import com.alipay.sofa.jraft.option.CliOptions;
 import com.alipay.sofa.jraft.rpc.CliClientService;
+import com.alipay.sofa.jraft.rpc.CliRequests;
 import com.alipay.sofa.jraft.rpc.CliRequests.AddLearnersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.AddPeerRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.AddPeerResponse;
@@ -44,6 +50,7 @@ import com.alipay.sofa.jraft.rpc.CliRequests.GetLeaderRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.GetLeaderResponse;
 import com.alipay.sofa.jraft.rpc.CliRequests.GetPeersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.GetPeersResponse;
+import com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.LearnersOpResponse;
 import com.alipay.sofa.jraft.rpc.CliRequests.RemoveLearnersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.RemovePeerRequest;
@@ -58,9 +65,6 @@ import com.alipay.sofa.jraft.util.Requires;
 import com.alipay.sofa.jraft.util.Utils;
 import com.google.protobuf.Message;
 import com.google.protobuf.ProtocolStringList;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Cli service implementation.
@@ -200,7 +204,6 @@ public class CliServiceImpl implements CliService {
     }
 
     // TODO refactor addPeer/removePeer/changePeers/transferLeader, remove duplicated code.
-    @Override
     public Status changePeers(final String groupId, final Configuration conf, final Configuration newPeers) {
         Requires.requireTrue(!StringUtils.isBlank(groupId), "Blank group id");
         Requires.requireNonNull(conf, "Null configuration");
@@ -597,12 +600,64 @@ public class CliServiceImpl implements CliService {
 
     @Override
     public Status learners2Followers(String groupId, final Configuration conf, List<PeerId> learners) {
-        Configuration newConf = new Configuration(conf);
-        learners.forEach(learner -> {
-            newConf.removeLearner(learner);
-            newConf.addPeer(new PeerId(learner.getIp(), learner.getPort()));
-        });
-        return this.changePeers(groupId, conf, newConf);
+        checkLearnersOpParams(groupId, conf, learners);
+
+        final PeerId leaderId = new PeerId();
+        final Status st = getLeader(groupId, conf, leaderId);
+        if (!st.isOk()) {
+            return st;
+        }
+
+        if (!this.cliClientService.connect(leaderId.getEndpoint())) {
+            return new Status(-1, "Fail to init channel to leader %s", leaderId);
+        }
+        final Learners2FollowersRequest.Builder rb = Learners2FollowersRequest.newBuilder() //
+            .setGroupId(groupId) //
+            .setLeaderId(leaderId.toString());
+        for (final PeerId peer : learners) {
+            rb.addLearners(peer.toString());
+        }
+
+        try {
+            final Message result =
+                this.cliClientService.learners2Followers(leaderId.getEndpoint(), rb.build(), null).get();
+            if (result instanceof CliRequests.Learners2FollowersResponse) {
+                final CliRequests.Learners2FollowersResponse resp = (CliRequests.Learners2FollowersResponse) result;
+                final Configuration oldConf = new Configuration();
+                for (final String peerIdStr : resp.getOldPeersList()) {
+                    final PeerId oldPeer = new PeerId();
+                    oldPeer.parse(peerIdStr);
+                    oldConf.addPeer(oldPeer);
+                }
+                final Configuration newConf = new Configuration();
+                for (final String peerIdStr : resp.getNewPeersList()) {
+                    final PeerId newPeer = new PeerId();
+                    newPeer.parse(peerIdStr);
+                    newConf.addPeer(newPeer);
+                }
+                final Configuration oldLearners = new Configuration();
+                for (final String peerIdStr : resp.getOldLearnersList()) {
+                    final PeerId oldPeer = new PeerId();
+                    oldPeer.parse(peerIdStr);
+                    oldLearners.addLearner(oldPeer);
+                }
+                final Configuration currentLearners = new Configuration();
+                for (final String peerIdStr : resp.getCurrentLearnersList()) {
+                    final PeerId newPeer = new PeerId();
+                    newPeer.parse(peerIdStr);
+                    currentLearners.addLearner(newPeer);
+                }
+                LOG.info("Configuration of replication group {} changed from {} to {} , Learners changed from{} to {}",
+                    groupId, oldConf, newConf, oldLearners, currentLearners);
+                return Status.OK();
+            } else {
+                return statusFromResponse(result);
+
+            }
+
+        } catch (final Exception e) {
+            return new Status(-1, e.getMessage());
+        }
     }
 
     @Override

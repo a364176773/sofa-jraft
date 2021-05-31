@@ -237,6 +237,16 @@ public interface Node extends Lifecycle<NodeOptions>, Describer {
     void removeLearners(final List<PeerId> learners, final Closure done);
 
     /**
+     * learners to followers from the raft group. done.run() will be invoked after this
+     * operation finishes, describing the detailed result.
+     *
+     * @param learners learners to remove
+     * @param done     callback
+     * @since 1.3.0
+     */
+    void learners2Followers(final List<PeerId> learners, final Closure done);
+
+    /**
      * Reset learners in the raft group. done.run() will be invoked after this
      * operation finishes, describing the detailed result.
      *

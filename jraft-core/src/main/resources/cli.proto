@@ -105,3 +105,18 @@ message LearnersOpResponse {
     repeated string new_learners = 2;
     optional ErrorResponse errorResponse = 99;
 }
+
+message Learners2FollowersRequest {
+    required string group_id = 1;
+    required string leader_id = 2;
+    repeated string learners = 3;
+}
+
+message Learners2FollowersResponse {
+    repeated string old_peers = 1;
+    repeated string new_peers = 2;
+    repeated string old_learners = 3;
+    repeated string current_learners = 4;
+    optional ErrorResponse errorResponse = 99;
+}
+

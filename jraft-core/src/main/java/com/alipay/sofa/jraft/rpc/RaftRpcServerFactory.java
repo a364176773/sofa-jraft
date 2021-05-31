@@ -24,6 +24,7 @@ import com.alipay.sofa.jraft.rpc.impl.cli.AddPeerRequestProcessor;
 import com.alipay.sofa.jraft.rpc.impl.cli.ChangePeersRequestProcessor;
 import com.alipay.sofa.jraft.rpc.impl.cli.GetLeaderRequestProcessor;
 import com.alipay.sofa.jraft.rpc.impl.cli.GetPeersRequestProcessor;
+import com.alipay.sofa.jraft.rpc.impl.cli.Learners2FollowersRequestProcessor;
 import com.alipay.sofa.jraft.rpc.impl.cli.RemoveLearnersRequestProcessor;
 import com.alipay.sofa.jraft.rpc.impl.cli.RemovePeerRequestProcessor;
 import com.alipay.sofa.jraft.rpc.impl.cli.ResetLearnersRequestProcessor;
@@ -117,6 +118,7 @@ public class RaftRpcServerFactory {
         rpcServer.registerProcessor(new AddLearnersRequestProcessor(cliExecutor));
         rpcServer.registerProcessor(new RemoveLearnersRequestProcessor(cliExecutor));
         rpcServer.registerProcessor(new ResetLearnersRequestProcessor(cliExecutor));
+        rpcServer.registerProcessor(new Learners2FollowersRequestProcessor(cliExecutor));
     }
 
     /**

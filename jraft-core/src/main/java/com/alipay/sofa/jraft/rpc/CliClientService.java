@@ -153,4 +153,17 @@ public interface CliClientService extends ClientService {
      */
     Future<Message> getPeers(Endpoint endpoint, CliRequests.GetPeersRequest request,
                              RpcResponseClosure<CliRequests.GetPeersResponse> done);
+
+    /**
+     * learners to Followers
+     *
+     * @param endpoint  server address
+     * @param request   request data
+     * @param done      callback
+     * @return a future with result
+     * @since 1.3.0
+     */
+    Future<Message> learners2Followers(Endpoint endpoint, CliRequests.Learners2FollowersRequest request,
+        RpcResponseClosure<CliRequests.ChangePeersResponse> done);
+
 }
