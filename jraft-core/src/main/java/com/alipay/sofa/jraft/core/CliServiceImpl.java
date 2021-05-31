@@ -18,6 +18,7 @@ package com.alipay.sofa.jraft.core;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -604,6 +605,11 @@ public class CliServiceImpl implements CliService {
         return this.changePeers(groupId, conf, newConf);
     }
 
+    @Override
+    public Status learner2Follower(String groupId, final Configuration conf, PeerId learner) {
+        return this.learners2Followers(groupId, conf, Arrays.asList(learner));
+    }
+    
     private PeerId findTargetPeer(final PeerId self, final String groupId, final Configuration conf,
                                   final LeaderCounter leaderCounter) {
         for (final PeerId peerId : getAlivePeers(groupId, conf)) {
