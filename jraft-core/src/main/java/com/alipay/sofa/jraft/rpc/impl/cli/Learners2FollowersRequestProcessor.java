@@ -55,6 +55,7 @@ public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<
     protected Message processRequest0(final CliRequestContext ctx, final Learners2FollowersRequest request,
                                       final RpcRequestClosure done) {
         final List<PeerId> oldConf = ctx.node.listPeers();
+        final List<PeerId> oldLearners = ctx.node.listLearners();
         final List<PeerId> convertLearners = new ArrayList<>(request.getLearnersCount());
 
         for (final String peerStr : request.getLearnersList()) {
@@ -81,7 +82,7 @@ public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<
                 for (final PeerId peer : conf) {
                     rb.addNewPeers(peer.toString());
                 }
-                for (final PeerId peer : convertLearners) {
+                for (final PeerId peer : oldLearners) {
                     rb.addOldLearners(peer.toString());
                 }
                 List<PeerId> newLearners = ctx.node.listLearners();

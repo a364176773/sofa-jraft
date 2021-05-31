@@ -204,6 +204,7 @@ public class CliServiceImpl implements CliService {
     }
 
     // TODO refactor addPeer/removePeer/changePeers/transferLeader, remove duplicated code.
+    @Override
     public Status changePeers(final String groupId, final Configuration conf, final Configuration newPeers) {
         Requires.requireTrue(!StringUtils.isBlank(groupId), "Blank group id");
         Requires.requireNonNull(conf, "Null configuration");
