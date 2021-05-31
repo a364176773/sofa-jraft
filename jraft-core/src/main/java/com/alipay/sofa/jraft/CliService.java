@@ -189,4 +189,16 @@ public interface CliService extends Lifecycle<CliOptions> {
      */
     Status rebalance(final Set<String> balanceGroupIds, final Configuration conf,
                      final Map<String, PeerId> balancedLeaderIds);
+
+    /**
+     * learner to follower
+     * return OK status when success.
+     *
+     * @param groupId the raft group id
+     * @param conf    current configuration
+     * @param peer    peer to add
+     * @return operation status
+     */
+    Status learner2Follower(final String groupId, final Configuration conf, final PeerId peer);
+
 }

@@ -18,6 +18,7 @@ package com.alipay.sofa.jraft.core;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -592,6 +593,15 @@ public class CliServiceImpl implements CliService {
             LOG.info(
                 "Rebalanced raft groups={}, status={}, number of transfers={}, elapsed time={} ms, rebalanced result={}.",
                 balanceGroupIds, status, transfers, Utils.monotonicMs() - start, rebalancedLeaderIds);
+        }
+        return status;
+    }
+
+    @Override
+    public Status learner2Follower(String groupId, final Configuration conf, PeerId peer) {
+        Status status = this.removeLearners(groupId, conf, Arrays.asList(peer));
+        if (status.isOk()) {
+            status = this.addPeer(groupId, conf, new PeerId(peer.getIp(), peer.getPort()));
         }
         return status;
     }
