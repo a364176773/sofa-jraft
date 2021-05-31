@@ -27,7 +27,6 @@ import com.alipay.sofa.jraft.rpc.CliRequests.RemoveLearnersRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
@@ -53,15 +52,14 @@ public class Learners2FollowersRequestProcessorTest extends AbstractCliRequestPr
     @Override
     public void verify(final String interest, final Node node, final ArgumentCaptor<Closure> doneArg) {
         assertEquals(interest, RemoveLearnersRequest.class.getName());
-        Mockito.verify(node).learners2Followers(eq(Arrays.asList(new PeerId("learner", 8082), new PeerId("test", 8183))),
-            doneArg.capture());
+        Mockito.verify(node).learners2Followers(
+            eq(Arrays.asList(new PeerId("learner", 8082), new PeerId("test", 8183))), doneArg.capture());
         Closure done = doneArg.getValue();
         assertNotNull(done);
         done.run(Status.OK());
         assertNotNull(this.asyncContext.getResponseObject());
-        assertEquals("[learner:8081, learner:8082, learner:8083]", this.asyncContext.as(
-            Learners2FollowersResponse.class)
-            .getOldLearnersList().toString());
+        assertEquals("[learner:8081, learner:8082, learner:8083]",
+            this.asyncContext.as(Learners2FollowersResponse.class).getOldLearnersList().toString());
         assertEquals("[learner:8081, learner:8083]", this.asyncContext.as(Learners2FollowersResponse.class)
             .getCurrentLearnersList().toString());
     }

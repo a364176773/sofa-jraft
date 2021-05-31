@@ -248,6 +248,7 @@ public class CliServiceTest {
             }
         }
     }
+
     @Test
     public void testAddLearnersAndLearner2Followers() throws Exception {
         final PeerId peer3 = new PeerId(TestUtils.getMyIp(), TestUtils.INIT_PORT + 3);

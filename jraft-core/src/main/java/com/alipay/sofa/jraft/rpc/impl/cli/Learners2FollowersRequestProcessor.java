@@ -26,7 +26,6 @@ import com.alipay.sofa.jraft.rpc.RpcRequestClosure;
 import com.alipay.sofa.jraft.util.RpcFactoryHelper;
 import com.google.protobuf.Message;
 
-
 import static com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersRequest;
 import static com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersResponse;
 

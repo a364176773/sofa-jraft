@@ -105,7 +105,7 @@ public class CliClientServiceImpl extends AbstractClientService implements CliCl
 
     @Override
     public Future<Message> learners2Followers(Endpoint endpoint, CliRequests.Learners2FollowersRequest request,
-        RpcResponseClosure<ChangePeersResponse> done) {
+                                              RpcResponseClosure<ChangePeersResponse> done) {
         return invokeWithDone(endpoint, request, done, this.cliOptions.getTimeoutMs());
     }
 

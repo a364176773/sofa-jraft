@@ -619,8 +619,8 @@ public class CliServiceImpl implements CliService {
         }
 
         try {
-            final Message result =
-                this.cliClientService.learners2Followers(leaderId.getEndpoint(), rb.build(), null).get();
+            final Message result = this.cliClientService.learners2Followers(leaderId.getEndpoint(), rb.build(), null)
+                .get();
             if (result instanceof CliRequests.Learners2FollowersResponse) {
                 final CliRequests.Learners2FollowersResponse resp = (CliRequests.Learners2FollowersResponse) result;
                 final Configuration oldConf = new Configuration();
@@ -664,7 +664,7 @@ public class CliServiceImpl implements CliService {
     public Status learner2Follower(String groupId, final Configuration conf, PeerId learner) {
         return this.learners2Followers(groupId, conf, Arrays.asList(learner));
     }
-    
+
     private PeerId findTargetPeer(final PeerId self, final String groupId, final Configuration conf,
                                   final LeaderCounter leaderCounter) {
         for (final PeerId peerId : getAlivePeers(groupId, conf)) {

@@ -164,6 +164,6 @@ public interface CliClientService extends ClientService {
      * @since 1.3.0
      */
     Future<Message> learners2Followers(Endpoint endpoint, CliRequests.Learners2FollowersRequest request,
-        RpcResponseClosure<CliRequests.ChangePeersResponse> done);
+                                       RpcResponseClosure<CliRequests.ChangePeersResponse> done);
 
 }
