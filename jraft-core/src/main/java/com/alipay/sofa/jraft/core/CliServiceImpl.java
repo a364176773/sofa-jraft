@@ -27,11 +27,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alipay.sofa.jraft.CliService;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.conf.Configuration;
@@ -40,7 +35,6 @@ import com.alipay.sofa.jraft.error.JRaftException;
 import com.alipay.sofa.jraft.error.RaftError;
 import com.alipay.sofa.jraft.option.CliOptions;
 import com.alipay.sofa.jraft.rpc.CliClientService;
-import com.alipay.sofa.jraft.rpc.CliRequests;
 import com.alipay.sofa.jraft.rpc.CliRequests.AddLearnersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.AddPeerRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.AddPeerResponse;
@@ -50,6 +44,7 @@ import com.alipay.sofa.jraft.rpc.CliRequests.GetLeaderRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.GetLeaderResponse;
 import com.alipay.sofa.jraft.rpc.CliRequests.GetPeersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.GetPeersResponse;
+import com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersResponse;
 import com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.LearnersOpResponse;
 import com.alipay.sofa.jraft.rpc.CliRequests.RemoveLearnersRequest;
@@ -65,6 +60,9 @@ import com.alipay.sofa.jraft.util.Requires;
 import com.alipay.sofa.jraft.util.Utils;
 import com.google.protobuf.Message;
 import com.google.protobuf.ProtocolStringList;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cli service implementation.
@@ -622,8 +620,8 @@ public class CliServiceImpl implements CliService {
         try {
             final Message result = this.cliClientService.learners2Followers(leaderId.getEndpoint(), rb.build(), null)
                 .get();
-            if (result instanceof CliRequests.Learners2FollowersResponse) {
-                final CliRequests.Learners2FollowersResponse resp = (CliRequests.Learners2FollowersResponse) result;
+            if (result instanceof Learners2FollowersResponse) {
+                final Learners2FollowersResponse resp = (Learners2FollowersResponse) result;
                 final Configuration oldConf = new Configuration();
                 for (final String peerIdStr : resp.getOldPeersList()) {
                     final PeerId oldPeer = new PeerId();
