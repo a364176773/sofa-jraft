@@ -23,7 +23,6 @@ import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersRequest;
 import com.alipay.sofa.jraft.rpc.CliRequests.Learners2FollowersResponse;
-import com.alipay.sofa.jraft.rpc.CliRequests.RemoveLearnersRequest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -51,7 +50,7 @@ public class Learners2FollowersRequestProcessorTest extends AbstractCliRequestPr
 
     @Override
     public void verify(final String interest, final Node node, final ArgumentCaptor<Closure> doneArg) {
-        assertEquals(interest, RemoveLearnersRequest.class.getName());
+        assertEquals(interest, Learners2FollowersRequest.class.getName());
         Mockito.verify(node).learners2Followers(
             eq(Arrays.asList(new PeerId("learner", 8082), new PeerId("test", 8183))), doneArg.capture());
         Closure done = doneArg.getValue();

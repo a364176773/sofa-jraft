@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.error.RaftError;
-import com.alipay.sofa.jraft.rpc.CliRequests.RemoveLearnersRequest;
 import com.alipay.sofa.jraft.rpc.RpcRequestClosure;
 import com.alipay.sofa.jraft.util.RpcFactoryHelper;
 import com.google.protobuf.Message;
@@ -54,7 +53,8 @@ public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<
     @Override
     protected Message processRequest0(final CliRequestContext ctx, final Learners2FollowersRequest request,
                                       final RpcRequestClosure done) {
-        final List<PeerId> oldConf = ctx.node.listPeers();
+        final List<PeerId> oldConf = new ArrayList<>(ctx.node.listPeers().size());
+        oldConf.addAll(ctx.node.listPeers());
         final List<PeerId> oldLearners = ctx.node.listLearners();
         final List<PeerId> convertLearners = new ArrayList<>(request.getLearnersCount());
 
@@ -87,7 +87,9 @@ public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<
                 }
                 List<PeerId> newLearners = ctx.node.listLearners();
                 for (final PeerId peer : newLearners) {
-                    rb.addCurrentLearners(peer.toString());
+                    if (!convertLearners.contains(peer)) {
+                        rb.addCurrentLearners(peer.toString());
+                    }
                 }
                 done.sendResponse(rb.build());
             }
@@ -98,7 +100,7 @@ public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<
 
     @Override
     public String interest() {
-        return RemoveLearnersRequest.class.getName();
+        return Learners2FollowersRequest.class.getName();
     }
 
 }
