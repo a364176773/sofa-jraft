@@ -61,6 +61,10 @@ public class Learners2FollowersRequestProcessorTest extends AbstractCliRequestPr
             this.asyncContext.as(Learners2FollowersResponse.class).getOldLearnersList().toString());
         assertEquals("[learner:8081, learner:8083]", this.asyncContext.as(Learners2FollowersResponse.class)
             .getCurrentLearnersList().toString());
+        assertEquals("[localhost:8081, localhost:8082, localhost:8083]", this.asyncContext
+                .as(Learners2FollowersResponse.class).getOldPeersList().toString());
+        assertEquals("[localhost:8081, localhost:8082, localhost:8083, learner:8082]", this.asyncContext.as(Learners2FollowersResponse.class)
+                .getNewPeersList().toString());
     }
 
 }

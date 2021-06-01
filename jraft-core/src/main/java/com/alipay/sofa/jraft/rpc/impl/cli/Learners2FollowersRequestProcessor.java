@@ -89,6 +89,8 @@ public class Learners2FollowersRequestProcessor extends BaseCliRequestProcessor<
                 for (final PeerId peer : newLearners) {
                     if (!convertLearners.contains(peer)) {
                         rb.addCurrentLearners(peer.toString());
+                    } else {
+                        rb.addNewPeers(peer.toString());
                     }
                 }
                 done.sendResponse(rb.build());
