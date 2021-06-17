@@ -3079,12 +3079,15 @@ public class NodeImpl implements Node, RaftServerService {
     public void learners2Followers(final List<PeerId> learners, final Closure done) {
         this.writeLock.lock();
         try {
-            Configuration newConf = new Configuration(this.conf.getConf());
-            learners.forEach(learner -> {
-                newConf.removeLearner(learner);
-                newConf.addPeer(new PeerId(learner.getIp(), learner.getPort()));
+            removeLearners(learners, status -> {
+                if(status.isOk()){
+                    Configuration newConf = new Configuration(this.conf.getConf());
+                    learners.forEach(learner ->
+                            newConf.addPeer(new PeerId(learner.getIp(), learner.getPort()))
+                    );
+                    unsafeRegisterConfChange(this.conf.getConf(), newConf, done);
+                }
             });
-            changePeers(newConf, done);
         } finally {
             this.writeLock.unlock();
         }

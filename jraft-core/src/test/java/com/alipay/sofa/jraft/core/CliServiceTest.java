@@ -267,19 +267,14 @@ public class CliServiceTest {
             assertEquals(20, fsm.getLogs().size());
         }
 
-        //learner to follower peer3
+        // learner to follower peer3
         assertTrue(this.cliService.learner2Follower(this.groupId, this.conf, peer3).isOk());
         Thread.sleep(200);
         sendTestTaskAndWait(this.cluster.getLeader(), 0);
         Thread.sleep(1000);
         assertEquals(6, this.cluster.getFsms().size());
-        for (final MockStateMachine fsm : this.cluster.getFsms()) {
-            if (fsm.getAddress().equals(peer3.getEndpoint())) {
-                assertEquals(20, fsm.getLogs().size());
-            } else {
-                assertEquals(30, fsm.getLogs().size());
-            }
-        }
+        assertEquals(2, this.cliService.getLearners(this.groupId, this.conf).size());
+        assertEquals(4, this.cliService.getPeers(this.groupId, this.conf).size());
     }
 
     @Test
